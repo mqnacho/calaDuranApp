@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Importaciones Cala - Duran</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --navy-light: #1d3461;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-pale: #f5e9c8;
+    --white: #f8f6f1;
+    --gray: #8892a4;
+    --danger: #e05c5c;
+    --success: #4caf7d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── UTILITIES ── */
+  .hidden { display: none !important; }
+
+  /* ── BACKGROUND DECORATION ── */
+  .bg-decoration {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .bg-decoration::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .bg-decoration::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(29,52,97,0.6) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* ══════════════════════════════
+     LOGIN SCREEN
+  ══════════════════════════════ */
+  #login-screen {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--navy);
+  }
+
+  .login-card {
+    position: relative; z-index: 1;
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 20px;
+    padding: 56px 48px;
+    width: 420px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.05);
+    animation: cardIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .login-logo {
+    text-align: center; margin-bottom: 36px;
+  }
+  .login-logo .logo-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+  }
+  .login-logo h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--white); line-height: 1.2;
+  }
+  .login-logo h1 span { color: var(--gold); }
+  .login-logo p { color: var(--gray); font-size: 13px; margin-top: 4px; }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block; font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--gold); margin-bottom: 8px;
+  }
+  .form-group input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  }
+  .form-group input:focus {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.05);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+  }
+  .form-group input::placeholder { color: rgba(136,146,164,0.6); }
+
+  .login-error {
+    background: rgba(224,92,92,0.12);
+    border: 1px solid rgba(224,92,92,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px; color: #f5a5a5;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .btn-login {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border: none; border-radius: 10px;
+    padding: 15px;
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    box-shadow: 0 6px 20px rgba(201,168,76,0.3);
+  }
+  .btn-login:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 10px 28px rgba(201,168,76,0.4); }
+  .btn-login:active { transform: translateY(0); }
+
+  /* ══════════════════════════════
+     MAIN APP
+  ══════════════════════════════ */
+  #main-app { position: relative; z-index: 1; min-height: 100vh; }
+
+  /* TOP NAV */
+  .topnav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 70px;
+    background: rgba(10,22,40,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .nav-brand .logo-icon-sm {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(201,168,76,0.2);
+  }
+  .nav-brand h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; color: var(--white);
+  }
+  .nav-brand h2 span { color: var(--gold); }
+
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-user {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--gray);
+  }
+  .nav-user .avatar {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--navy-light), var(--gold));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--white);
+  }
+  .btn-logout {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 8px;
+    padding: 7px 16px;
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-logout:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+
+  /* MAIN CONTENT */
+  .main-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  .page-header {
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .page-header .greeting {
+    font-size: 13px; color: var(--gold); font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px; line-height: 1.1;
+    color: var(--white);
+  }
+  .page-header h1 span { color: var(--gold); }
+  .page-header p {
+    color: var(--gray); font-size: 15px; margin-top: 12px; max-width: 450px;
+  }
+  .gold-line {
+    width: 60px; height: 3px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    border-radius: 2px; margin-top: 20px;
+  }
+
+  /* DASHBOARD CARDS */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+
+  .dash-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 20px;
+    padding: 40px 36px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .dash-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--gold), var(--gold-light));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .dash-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(201,168,76,0.35);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 30px rgba(201,168,76,0.05);
+  }
+  .dash-card:hover::before { transform: scaleX(1); }
+
+  .dash-card .card-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 24px;
+  }
+  .dash-card:nth-child(1) .card-icon { background: rgba(201,168,76,0.12); }
+  .dash-card:nth-child(2) .card-icon { background: rgba(76,175,125,0.12); }
+  .dash-card:nth-child(3) .card-icon { background: rgba(100,149,237,0.12); }
+
+  .dash-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--white); margin-bottom: 10px;
+  }
+  .dash-card p {
+    font-size: 13px; color: var(--gray); line-height: 1.6;
+  }
+  .dash-card .card-arrow {
+    position: absolute; bottom: 36px; right: 36px;
+    width: 34px; height: 34px;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); font-size: 14px;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dash-card:hover .card-arrow { background: rgba(201,168,76,0.1); transform: rotate(45deg); }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-top: 32px;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+  .stat-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.08);
+    border-radius: 14px; padding: 22px 24px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .stat-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .stat-item:nth-child(1) .stat-dot { background: var(--gold); box-shadow: 0 0 8px rgba(201,168,76,0.5); }
+  .stat-item:nth-child(2) .stat-dot { background: var(--success); box-shadow: 0 0 8px rgba(76,175,125,0.5); }
+  .stat-item:nth-child(3) .stat-dot { background: #6495ed; box-shadow: 0 0 8px rgba(100,149,237,0.5); }
+  .stat-label { font-size: 12px; color: var(--gray); margin-bottom: 4px; }
+  .stat-value { font-size: 20px; font-weight: 600; color: var(--white); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ══════════════════════════════
+     MODAL OVERLAY
+  ══════════════════════════════ */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(5,12,24,0.85);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 24px;
+    padding: 48px 44px;
+    width: 500px; max-width: 95vw;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    position: relative;
+  }
+  .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
+  .modal-close {
+    position: absolute; top: 20px; right: 20px;
+    width: 34px; height: 34px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--gray); font-size: 16px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .modal-close:hover { background: rgba(224,92,92,0.15); color: var(--danger); }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--white); margin-bottom: 8px; }
+  .modal-title span { color: var(--gold); }
+  .modal-subtitle { font-size: 13px; color: var(--gray); margin-bottom: 36px; }
+  .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .type-card {
+    background: rgba(255,255,255,0.03);
+    border: 2px solid rgba(201,168,76,0.12);
+    border-radius: 16px; padding: 28px 22px;
+    cursor: pointer; text-align: center;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .type-card:hover { border-color: var(--gold); background: rgba(201,168,76,0.06); transform: translateY(-3px); }
+  .type-card .type-icon { font-size: 36px; margin-bottom: 14px; }
+  .type-card h4 { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+  .type-card p { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+  /* ══════════════════════════════
+     CONTENEDOR INTERNACIONAL FORM
+  ══════════════════════════════ */
+  #page-intl {
+    position: fixed; inset: 0; z-index: 150;
+    background: var(--navy);
+    overflow-y: auto;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  #page-intl.active { opacity: 1; pointer-events: all; }
+  .page-intl-inner { max-width: 860px; margin: 0 auto; padding: 40px 40px 80px; }
+  .page-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--gold); font-size: 13px; font-weight: 500;
+    cursor: pointer; margin-bottom: 36px;
+    background: none; border: none; transition: gap 0.2s;
+  }
+  .page-back:hover { gap: 12px; }
+  .form-section-title { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--white); margin-bottom: 6px; }
+  .form-section-title span { color: var(--gold); }
+  .form-section-sub { font-size: 14px; color: var(--gray); margin-bottom: 40px; }
+  .form-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 20px; padding: 36px; margin-bottom: 20px;
+  }
+  .form-card-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 28px; padding-bottom: 20px;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+  }
+  .form-card-header .fch-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; background: rgba(201,168,76,0.1);
+  }
+  .form-card-header h3 { font-size: 16px; font-weight: 600; color: var(--white); }
+  .form-card-header p { font-size: 12px; color: var(--gray); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field-group { display: flex; flex-direction: column; gap: 7px; }
+  .field-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); }
+  .field-group input, .field-group select {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 10px; padding: 12px 14px;
+    color: var(--white); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  }
+  .field-group input:focus, .field-group select:focus {
+    border-color: var(--gold); background: rgba(201,168,76,0.05);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+  }
+  .field-group input::placeholder { color: rgba(136,146,164,0.5); }
+  .field-group select { cursor: pointer; }
+  .field-group select option { background: var(--navy-mid); }
+  .result-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .result-badge {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 8px; padding: 10px 14px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .result-badge .rb-label { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; }
+  .result-badge .rb-value { font-size: 15px; font-weight: 600; color: var(--gold-light); }
+  .total-summary {
+    background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.04));
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 16px; padding: 28px 32px; margin-top: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .total-item { text-align: center; }
+  .total-item .t-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .total-item .t-value { font-size: 22px; font-weight: 700; color: var(--white); }
+  .total-item .t-value.gold { color: var(--gold); }
+  .total-divider { width: 1px; height: 40px; background: rgba(201,168,76,0.2); }
+  .btn-save {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border: none; border-radius: 12px; padding: 16px 40px;
+    color: var(--navy); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .btn-save:hover { transform: translateY(-2px); filter: brightness(1.05); box-shadow: 0 14px 32px rgba(201,168,76,0.4); }
+  .btn-save:active { transform: translateY(0); }
+
+  /* TIPO DE CAMBIO WIDGET */
+  .tc-widget {
+    position: fixed; bottom: 28px; left: 28px; z-index: 300;
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 16px; padding: 16px 20px; min-width: 200px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s;
+    display: none;
+  }
+  .tc-widget.visible { display: block; }
+  .tc-widget:hover { transform: translateY(-2px); box-shadow: 0 22px 50px rgba(0,0,0,0.4); }
+  .tc-widget .tc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); }
+  .tc-widget .tc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px rgba(76,175,125,0.6); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+  .tc-widget .tc-rate { font-size: 24px; font-weight: 700; color: var(--gold); line-height: 1; margin-bottom: 4px; }
+  .tc-widget .tc-sub { font-size: 11px; color: var(--gray); }
+  .tc-widget .tc-updated { font-size: 10px; color: rgba(136,146,164,0.5); margin-top: 8px; border-top: 1px solid rgba(201,168,76,0.08); padding-top: 8px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .form-row, .form-row.three { grid-template-columns: 1fr; }
+    .total-summary { flex-direction: column; align-items: flex-start; }
+    .total-divider { display: none; }
+    .page-intl-inner { padding: 24px 16px 60px; }
+    .type-grid { grid-template-columns: 1fr; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr; }
+    .main-content { padding: 40px 20px; }
+    .topnav { padding: 0 20px; }
+    .login-card { width: 90%; padding: 40px 28px; }
+  }
+
+  /* ══════════════════════════════
+     PAGINA REGISTRO DE LIMONES
+  ══════════════════════════════ */
+  #page-limones {
+    position: fixed; inset: 0; z-index: 160;
+    background: var(--navy);
+    overflow-y: auto;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  #page-limones.active { opacity: 1; pointer-events: all; }
+  .page-limones-inner { max-width: 900px; margin: 0 auto; padding: 40px 40px 80px; }
+
+  /* Entrada de calibre y cajas */
+  .limones-entry-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 20px; padding: 32px 36px; margin-bottom: 24px;
+  }
+  .limones-entry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px; align-items: end;
+  }
+  .calibre-selector { position: relative; }
+  .calibre-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px; padding: 12px 14px;
+    color: var(--white); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: space-between; gap: 8px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .calibre-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .calibre-btn.open { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .calibre-arrow {
+    font-size: 11px; color: var(--gold);
+    transition: transform 0.25s ease;
+  }
+  .calibre-btn.open .calibre-arrow { transform: rotate(180deg); }
+  .calibre-dropdown {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 50;
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    display: none;
+    animation: dropIn 0.2s ease;
+  }
+  .calibre-dropdown.open { display: block; }
+  @keyframes dropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+  .calibre-option {
+    padding: 11px 16px; cursor: pointer; font-size: 14px;
+    color: var(--white); transition: background 0.15s, color 0.15s;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .calibre-option:last-child { border-bottom: none; }
+  .calibre-option:hover { background: rgba(201,168,76,0.1); color: var(--gold-light); }
+  .calibre-option .co-tag {
+    font-size: 11px; color: var(--gray);
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px; padding: 2px 7px;
+  }
+
+  /* Total limones display */
+  .total-limones-display {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 10px; padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 2px;
+    min-height: 46px; justify-content: center;
+  }
+  .tld-label { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; }
+  .tld-value { font-size: 18px; font-weight: 700; color: var(--gold-light); }
+
+  .btn-agregar-linea {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 10px; padding: 12px 22px;
+    color: var(--gold); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 16px;
+  }
+  .btn-agregar-linea:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+
+  /* FACTURA / TABLA */
+  .factura-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 20px; overflow: hidden; margin-bottom: 24px;
+  }
+  .factura-header {
+    background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.05));
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    padding: 20px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .factura-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; color: var(--white);
+  }
+  .factura-header .fh-badge {
+    font-size: 12px; color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 20px; padding: 4px 14px;
+  }
+  .factura-table { width: 100%; border-collapse: collapse; }
+  .factura-table thead tr {
+    background: rgba(255,255,255,0.02);
+  }
+  .factura-table th {
+    padding: 12px 20px; text-align: left;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--gold); border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  .factura-table th:last-child { text-align: right; }
+  .factura-table td {
+    padding: 14px 20px; font-size: 14px; color: var(--white);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+  .factura-table td:last-child { text-align: right; }
+  .factura-table tbody tr { transition: background 0.15s; }
+  .factura-table tbody tr:hover { background: rgba(201,168,76,0.03); }
+  .factura-table tbody tr:last-child td { border-bottom: none; }
+  .row-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(201,168,76,0.1);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--gold); font-weight: 700;
+  }
+  .calibre-chip {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px; padding: 3px 10px;
+    font-size: 13px; font-weight: 600; color: var(--gold-light);
+    display: inline-block;
+  }
+  .btn-del-row {
+    background: none; border: none; cursor: pointer;
+    color: rgba(224,92,92,0.5); font-size: 14px;
+    padding: 4px 8px; border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .btn-del-row:hover { color: var(--danger); background: rgba(224,92,92,0.1); }
+
+  /* TOTALES FACTURA */
+  .factura-totales {
+    border-top: 2px solid rgba(201,168,76,0.15);
+    padding: 24px 28px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+  }
+  .ft-item { text-align: center; }
+  .ft-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .ft-value { font-size: 26px; font-weight: 700; color: var(--white); }
+  .ft-value.gold { color: var(--gold); }
+  .ft-value.green { color: var(--success); }
+  .ft-divider { width: 1px; background: rgba(201,168,76,0.1); }
+
+  .empty-state {
+    text-align: center; padding: 40px 20px; color: var(--gray);
+  }
+  .empty-state .es-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-state p { font-size: 14px; }
+
+  /* ══════════════════════════════
+     MODALS (placeholder)
+  ══════════════════════════════ */
+
+  .toast {
+    position: fixed; bottom: 32px; right: 32px; z-index: 999;
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-left: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 16px 22px;
+    font-size: 14px; color: var(--white);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    max-width: 300px;
+  }
+  .toast.show { transform: translateX(0); }
+  .toast span { display: block; font-size: 12px; color: var(--gray); margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-decoration"></div>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="bg-decoration"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">🚢</div>
+      <h1>Importaciones<br><span>Cala - Duran</span></h1>
+      <p>Sistema de Control de Gastos</p>
+    </div>
+
+    <div class="login-error" id="login-error">
+      ⚠️ Usuario o contraseña incorrectos
+    </div>
+
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="inp-user" placeholder="Ingresa tu usuario" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <input type="password" id="inp-pass" placeholder="••••••••••••" autocomplete="off">
+    </div>
+
+    <button class="btn-login" onclick="doLogin()">Iniciar Sesión →</button>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="main-app" class="hidden">
+
+  <nav class="topnav">
+    <div class="nav-brand">
+      <div class="logo-icon-sm">🚢</div>
+      <h2>Importaciones <span>Cala - Duran</span></h2>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar">A</div>
+        <span>imporadmin</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Cerrar Sesión</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="page-header">
+      <div class="greeting">Bienvenido al panel de control</div>
+      <h1>Control de<br><span>Importaciones</span></h1>
+      <p>Gestiona contenedores, registra gastos y controla tus ventas desde un solo lugar.</p>
+      <div class="gold-line"></div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dash-card" onclick="openTypeModal()">
+        <div class="card-icon">📦</div>
+        <h3>Agregar Contenedor</h3>
+        <p>Registra un nuevo contenedor con todos sus gastos e información detallada.</p>
+        <div class="card-arrow">↗</div>
+      </div>
+      <div class="dash-card" onclick="showToast('Ver Contenedores', 'Esta sección estará disponible próximamente.')">
+        <div class="card-icon">🗂️</div>
+        <h3>Ver Contenedores</h3>
+        <p>Consulta el historial de todos los contenedores y sus estados actuales.</p>
+        <div class="card-arrow">↗</div>
+      </div>
+      <div class="dash-card" onclick="showToast('Agregar Venta', 'Esta sección estará disponible próximamente.')">
+        <div class="card-icon">💰</div>
+        <h3>Agregar Venta</h3>
+        <p>Registra ventas y vincúlalas a los contenedores correspondientes.</p>
+        <div class="card-arrow">↗</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-dot"></div>
+        <div>
+          <div class="stat-label">Contenedores registrados</div>
+          <div class="stat-value">0</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-dot"></div>
+        <div>
+          <div class="stat-label">Ventas registradas</div>
+          <div class="stat-value">0</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-dot"></div>
+        <div>
+          <div class="stat-label">Total en gastos</div>
+          <div class="stat-value">$0.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL: TIPO DE CONTENEDOR -->
+<div class="modal-overlay" id="modal-type">
+  <div class="modal-box">
+    <div class="modal-close" onclick="closeTypeModal()">&#x2715;</div>
+    <div class="modal-title">Agregar <span>Contenedor</span></div>
+    <div class="modal-subtitle">Selecciona el tipo de contenedor que deseas registrar</div>
+    <div class="type-grid">
+      <div class="type-card" onclick="showToast('Contenedor Nacional', 'Esta seccion estara disponible proximamente.'); closeTypeModal();">
+        <div class="type-icon">&#127968;</div>
+        <h4>Nacional</h4>
+        <p>Contenedor con origen y destino dentro de Costa Rica</p>
+      </div>
+      <div class="type-card" onclick="openIntlPage()">
+        <div class="type-icon">&#127757;</div>
+        <h4>Internacional</h4>
+        <p>Contenedor importado desde el extranjero con gastos aduanales</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGINA: CONTENEDOR INTERNACIONAL -->
+<div id="page-intl">
+  <div class="bg-grid"></div>
+  <nav class="topnav">
+    <div class="nav-brand">
+      <div class="logo-icon-sm">&#128674;</div>
+      <h2>Importaciones <span>Cala - Duran</span></h2>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar">A</div>
+        <span>imporadmin</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Cerrar Sesion</button>
+    </div>
+  </nav>
+  <div class="page-intl-inner">
+    <button class="page-back" onclick="closeIntlPage()">&larr; Volver al inicio</button>
+    <div class="form-section-title">Contenedor <span>Internacional</span></div>
+    <div class="form-section-sub">Registra todos los gastos asociados a este contenedor importado</div>
+
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="fch-icon">&#128278;</div>
+        <div><h3>Identificacion del Contenedor</h3><p>Datos generales del envio</p></div>
+      </div>
+      <div class="form-row">
+        <div class="field-group">
+          <label>Nombre / Referencia</label>
+          <input type="text" id="f-nombre" placeholder="Ej: Contenedor #001 - Marzo 2025">
+        </div>
+        <div class="field-group">
+          <label>Fecha de llegada</label>
+          <input type="date" id="f-fecha">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="fch-icon">&#128181;</div>
+        <div><h3>Gastos del Contenedor</h3><p>Ingresa los montos en dolares (USD)</p></div>
+      </div>
+
+      <div class="form-row single" style="margin-bottom:6px;">
+        <div class="field-group">
+          <label>Fitosanitario Costa Rica (USD $)</label>
+          <input type="number" id="f-fito" placeholder="0.00" min="0" step="0.01" oninput="recalcular()">
+        </div>
+      </div>
+      <div class="result-pair" style="margin-bottom:20px;">
+        <div class="result-badge"><div class="rb-label">Fitosanitario en USD</div><div class="rb-value" id="r-fito-usd">$ 0.00</div></div>
+        <div class="result-badge"><div class="rb-label">Fitosanitario en CRC</div><div class="rb-value" id="r-fito-crc">CRC 0.00</div></div>
+      </div>
+
+      <div class="form-row single" style="margin-bottom:6px;">
+        <div class="field-group">
+          <label>Transporte (USD $)</label>
+          <input type="number" id="f-transporte" placeholder="0.00" min="0" step="0.01" oninput="recalcular()">
+        </div>
+      </div>
+      <div class="result-pair" style="margin-bottom:20px;">
+        <div class="result-badge"><div class="rb-label">Transporte en USD</div><div class="rb-value" id="r-trans-usd">$ 0.00</div></div>
+        <div class="result-badge"><div class="rb-label">Transporte en CRC</div><div class="rb-value" id="r-trans-crc">CRC 0.00</div></div>
+      </div>
+
+      <div class="form-row single" style="margin-bottom:6px;">
+        <div class="field-group">
+          <label>Precio del Contenedor (USD $)</label>
+          <input type="number" id="f-precio" placeholder="0.00" min="0" step="0.01" oninput="recalcular()">
+        </div>
+      </div>
+      <div class="result-pair" style="margin-bottom:8px;">
+        <div class="result-badge"><div class="rb-label">Precio en USD</div><div class="rb-value" id="r-precio-usd">$ 0.00</div></div>
+        <div class="result-badge"><div class="rb-label">Precio en CRC</div><div class="rb-value" id="r-precio-crc">CRC 0.00</div></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="fch-icon">&#128202;</div>
+        <div><h3>Resumen de Gastos</h3><p>Total calculado automaticamente</p></div>
+      </div>
+      <div class="total-summary">
+        <div class="total-item"><div class="t-label">Total USD</div><div class="t-value gold" id="total-usd">$ 0.00</div></div>
+        <div class="total-divider"></div>
+        <div class="total-item"><div class="t-label">Total CRC</div><div class="t-value" id="total-crc">CRC 0.00</div></div>
+        <div class="total-divider"></div>
+        <div class="total-item"><div class="t-label">Tipo de Cambio</div><div class="t-value" id="total-tc" style="font-size:16px;">CRC ---</div></div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+      <button class="btn-save" onclick="guardarContenedor()">&#128190; Guardar Contenedor</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIPO DE CAMBIO WIDGET -->
+<div class="tc-widget" id="tc-widget">
+  <div class="tc-header"><div class="tc-dot"></div>Tipo de Cambio en Vivo</div>
+  <div class="tc-rate" id="tc-rate">Cargando...</div>
+  <div class="tc-sub">1 USD = <span id="tc-rate-sub">---</span> CRC</div>
+  <div class="tc-updated" id="tc-updated">Actualizando...</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <strong id="toast-title"></strong>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+  function doLogin() {
+    var user = document.getElementById('inp-user').value.trim();
+    var pass = document.getElementById('inp-pass').value.trim();
+    var err  = document.getElementById('login-error');
+    if (user === 'imporadmin' && pass === 'caladuran1408') {
+      err.style.display = 'none';
+      var ls = document.getElementById('login-screen');
+      ls.style.animation = 'fadeOut 0.4s ease forwards';
+      setTimeout(function() {
+        ls.classList.add('hidden');
+        document.getElementById('main-app').classList.remove('hidden');
+        actualizarEstadisticas();
+      }, 400);
+    } else {
+      err.style.display = 'block';
+      var card = document.querySelector('.login-card');
+      card.style.animation = 'shake 0.4s ease';
+      setTimeout(function() { card.style.animation = ''; }, 400);
+    }
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      var lv = !document.getElementById('login-screen').classList.contains('hidden');
+      if (lv) doLogin();
+    }
+  });
+
+  function doLogout() {
+    document.getElementById('main-app').classList.add('hidden');
+    document.getElementById('page-intl').classList.remove('active');
+    document.getElementById('tc-widget').classList.remove('visible');
+    var ls = document.getElementById('login-screen');
+    ls.classList.remove('hidden');
+    ls.style.animation = 'cardIn 0.5s ease both';
+    document.getElementById('inp-user').value = '';
+    document.getElementById('inp-pass').value = '';
+  }
+
+  function openTypeModal() { document.getElementById('modal-type').classList.add('active'); }
+  function closeTypeModal() { document.getElementById('modal-type').classList.remove('active'); }
+  document.getElementById('modal-type').addEventListener('click', function(e) { if (e.target === this) closeTypeModal(); });
+
+  function openIntlPage() {
+    closeTypeModal();
+    document.getElementById('page-intl').classList.add('active');
+    document.getElementById('tc-widget').classList.add('visible');
+    fetchTipoCambio();
+  }
+  function closeIntlPage() {
+    document.getElementById('page-intl').classList.remove('active');
+    document.getElementById('tc-widget').classList.remove('visible');
+  }
+
+  var tipoCambio = 515;
+  function fetchTipoCambio() {
+    fetch('https://api.exchangerate-api.com/v4/latest/USD')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        tipoCambio = data.rates['CRC'] || 515;
+        var fmt = tipoCambio.toLocaleString('es-CR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('tc-rate').textContent    = 'CRC ' + fmt;
+        document.getElementById('tc-rate-sub').textContent = fmt;
+        document.getElementById('total-tc').textContent   = 'CRC ' + fmt;
+        var now = new Date();
+        document.getElementById('tc-updated').textContent = 'Actualizado: ' + now.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
+        recalcular();
+      })
+      .catch(function() {
+        tipoCambio = 515;
+        document.getElementById('tc-rate').textContent    = 'CRC 515.00*';
+        document.getElementById('tc-rate-sub').textContent = '515.00';
+        document.getElementById('total-tc').textContent   = 'CRC 515.00*';
+        document.getElementById('tc-updated').textContent = '* Sin conexion - valor referencial';
+        recalcular();
+      });
+  }
+
+  function parseVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
+  function fmtUSD(n) { return '$ ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmtCRC(n) { return 'CRC ' + n.toLocaleString('es-CR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  function recalcular() {
+    var fito  = parseVal('f-fito');
+    var trans = parseVal('f-transporte');
+    var prec  = parseVal('f-precio');
+    var tc    = tipoCambio || 515;
+    document.getElementById('r-fito-usd').textContent   = fmtUSD(fito);
+    document.getElementById('r-fito-crc').textContent   = fmtCRC(fito * tc);
+    document.getElementById('r-trans-usd').textContent  = fmtUSD(trans);
+    document.getElementById('r-trans-crc').textContent  = fmtCRC(trans * tc);
+    document.getElementById('r-precio-usd').textContent = fmtUSD(prec);
+    document.getElementById('r-precio-crc').textContent = fmtCRC(prec * tc);
+    var tot = fito + trans + prec;
+    document.getElementById('total-usd').textContent = fmtUSD(tot);
+    document.getElementById('total-crc').textContent = fmtCRC(tot * tc);
+  }
+
+  function guardarContenedor() {
+    var nombre = document.getElementById('f-nombre').value.trim();
+    if (!nombre) { showToast('Campo requerido', 'Por favor ingresa un nombre o referencia.'); return; }
+    var fito  = parseVal('f-fito');
+    var trans = parseVal('f-transporte');
+    var prec  = parseVal('f-precio');
+    var tc    = tipoCambio || 515;
+    var total = fito + trans + prec;
+    // Guardar contenedor actual en memoria temporal para asociar limones
+    window._contenedorActual = { tipo: 'Internacional', nombre: nombre, fecha: document.getElementById('f-fecha').value, fito: fito, trans: trans, prec: prec, tc: tc, totalUSD: total, totalCRC: total * tc, guardadoEn: new Date().toISOString() };
+    // Ir a registro de limones
+    openLimonesPage(nombre);
+  }
+
+  function actualizarEstadisticas() {
+    var lista  = JSON.parse(localStorage.getItem('contenedores') || '[]');
+    var totalG = lista.reduce(function(s, c) { return s + (c.totalUSD || 0); }, 0);
+    document.querySelectorAll('.stat-value')[0].textContent = lista.length;
+    document.querySelectorAll('.stat-value')[2].textContent = '$ ' + totalG.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  var toastTimer;
+  function showToast(title, msg) {
+    var toast = document.getElementById('toast');
+    document.getElementById('toast-title').textContent = title;
+    document.getElementById('toast-msg').textContent   = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 3500);
+  }
+
+  var st = document.createElement('style');
+  st.textContent = '@keyframes fadeOut{to{opacity:0;transform:scale(0.97)}} @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}';
+  document.head.appendChild(st);
+
+  actualizarEstadisticas();
+</script>
+
+<!-- PAGINA: REGISTRO DE LIMONES -->
+<div id="page-limones">
+  <div class="bg-grid"></div>
+  <nav class="topnav">
+    <div class="nav-brand">
+      <div class="logo-icon-sm">&#128674;</div>
+      <h2>Importaciones <span>Cala - Duran</span></h2>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar">A</div>
+        <span>imporadmin</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Cerrar Sesion</button>
+    </div>
+  </nav>
+  <div class="page-limones-inner">
+    <button class="page-back" onclick="closeLimonesPage()">&larr; Volver</button>
+    <div class="form-section-title">Registro de <span>Limones</span></div>
+    <div class="form-section-sub" id="limones-subtitulo">Contenedor: ---</div>
+
+    <!-- ENTRADA -->
+    <div class="limones-entry-card">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+        <div style="width:36px;height:36px;background:rgba(201,168,76,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;">&#127819;</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--white);">Agregar Linea</div>
+          <div style="font-size:12px;color:var(--gray);">Selecciona calibre e ingresa cantidad de cajas</div>
+        </div>
+      </div>
+      <div class="limones-entry-grid">
+        <!-- Col izquierda: Calibre -->
+        <div class="field-group">
+          <label>Calibre</label>
+          <div class="calibre-selector">
+            <button class="calibre-btn" id="calibre-btn" onclick="toggleCalibre()">
+              <span id="calibre-selected">Seleccionar calibre</span>
+              <span class="calibre-arrow">&#9660;</span>
+            </button>
+            <div class="calibre-dropdown" id="calibre-dropdown">
+              <div class="calibre-option" onclick="selectCalibre(250)"><span>250</span><span class="co-tag">calibre</span></div>
+              <div class="calibre-option" onclick="selectCalibre(230)"><span>230</span><span class="co-tag">calibre</span></div>
+              <div class="calibre-option" onclick="selectCalibre(200)"><span>200</span><span class="co-tag">calibre</span></div>
+              <div class="calibre-option" onclick="selectCalibre(175)"><span>175</span><span class="co-tag">calibre</span></div>
+              <div class="calibre-option" onclick="selectCalibre(150)"><span>150</span><span class="co-tag">calibre</span></div>
+              <div class="calibre-option" onclick="selectCalibre(110)"><span>110</span><span class="co-tag">calibre</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Col derecha: Cantidad cajas -->
+        <div class="field-group">
+          <label>Cantidad de Cajas</label>
+          <input type="number" id="inp-cajas" placeholder="0" min="0" step="1" oninput="calcLinea()">
+        </div>
+        <!-- Total limones preview -->
+        <div class="field-group">
+          <label>Total Limones (preview)</label>
+          <div class="total-limones-display">
+            <div class="tld-label">Calibre x Cajas</div>
+            <div class="tld-value" id="preview-limones">0</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-agregar-linea" onclick="agregarLinea()">
+        &#43; Agregar a la factura
+      </button>
+    </div>
+
+    <!-- FACTURA -->
+    <div class="factura-card" id="factura-card">
+      <div class="factura-header">
+        <h3>&#128203; Desglose de Cajas y Calibres</h3>
+        <span class="fh-badge" id="factura-badge">0 lineas</span>
+      </div>
+      <div id="factura-body">
+        <div class="empty-state">
+          <div class="es-icon">&#127819;</div>
+          <p>Aun no hay lineas registradas.<br>Agrega calibres y cajas arriba.</p>
+        </div>
+      </div>
+      <div class="factura-totales" id="factura-totales" style="display:none;">
+        <div class="ft-item">
+          <div class="ft-label">Total de Cajas</div>
+          <div class="ft-value" id="ft-cajas">0</div>
+        </div>
+        <div class="ft-divider"></div>
+        <div class="ft-item">
+          <div class="ft-label">Total de Limones</div>
+          <div class="ft-value gold" id="ft-limones">0</div>
+        </div>
+        <div class="ft-divider"></div>
+        <div class="ft-item">
+          <div class="ft-label">Gran Total</div>
+          <div class="ft-value green" id="ft-gran-total">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guardar todo -->
+    <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+      <button class="page-back" style="margin-bottom:0;" onclick="closeLimonesPage()">&larr; Cancelar</button>
+      <button class="btn-save" onclick="guardarTodo()">&#128190; Guardar y Finalizar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── LIMONES STATE ──
+  var limonesLineas = [];
+  var calibreActual = null;
+
+  function openLimonesPage(nombre) {
+    limonesLineas = [];
+    calibreActual = null;
+    document.getElementById('calibre-selected').textContent = 'Seleccionar calibre';
+    document.getElementById('calibre-btn').classList.remove('open');
+    document.getElementById('calibre-dropdown').classList.remove('open');
+    document.getElementById('inp-cajas').value = '';
+    document.getElementById('preview-limones').textContent = '0';
+    document.getElementById('limones-subtitulo').textContent = 'Contenedor: ' + (nombre || '---');
+    renderFactura();
+    document.getElementById('page-limones').classList.add('active');
+  }
+
+  function closeLimonesPage() {
+    document.getElementById('page-limones').classList.remove('active');
+    // limpiar intl form
+    ['f-nombre','f-fecha','f-fito','f-transporte','f-precio'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    recalcular && recalcular();
+    closeIntlPage();
+  }
+
+  // Calibre dropdown
+  function toggleCalibre() {
+    var btn = document.getElementById('calibre-btn');
+    var dd  = document.getElementById('calibre-dropdown');
+    var open = dd.classList.contains('open');
+    if (open) { dd.classList.remove('open'); btn.classList.remove('open'); }
+    else       { dd.classList.add('open');    btn.classList.add('open'); }
+  }
+
+  function selectCalibre(val) {
+    calibreActual = val;
+    document.getElementById('calibre-selected').textContent = val;
+    document.getElementById('calibre-btn').classList.remove('open');
+    document.getElementById('calibre-dropdown').classList.remove('open');
+    calcLinea();
+  }
+
+  // Close dropdown if clicking outside
+  document.addEventListener('click', function(e) {
+    var btn = document.getElementById('calibre-btn');
+    var dd  = document.getElementById('calibre-dropdown');
+    if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+      dd.classList.remove('open');
+      btn.classList.remove('open');
+    }
+  });
+
+  function calcLinea() {
+    var cajas = parseInt(document.getElementById('inp-cajas').value) || 0;
+    var cal   = calibreActual || 0;
+    document.getElementById('preview-limones').textContent = (cal * cajas).toLocaleString('es-CR');
+  }
+
+  function agregarLinea() {
+    if (!calibreActual) { showToast('Falta calibre', 'Por favor selecciona un calibre.'); return; }
+    var cajas = parseInt(document.getElementById('inp-cajas').value) || 0;
+    if (cajas <= 0)     { showToast('Falta cantidad', 'Por favor ingresa una cantidad de cajas mayor a 0.'); return; }
+    limonesLineas.push({ calibre: calibreActual, cajas: cajas, limones: calibreActual * cajas });
+    // Reset entrada
+    calibreActual = null;
+    document.getElementById('calibre-selected').textContent = 'Seleccionar calibre';
+    document.getElementById('inp-cajas').value = '';
+    document.getElementById('preview-limones').textContent = '0';
+    renderFactura();
+    showToast('Linea agregada', 'Calibre y cajas registrados correctamente.');
+  }
+
+  function eliminarLinea(idx) {
+    limonesLineas.splice(idx, 1);
+    renderFactura();
+  }
+
+  function renderFactura() {
+    var badge    = document.getElementById('factura-badge');
+    var body     = document.getElementById('factura-body');
+    var totales  = document.getElementById('factura-totales');
+    var n        = limonesLineas.length;
+
+    badge.textContent = n + (n === 1 ? ' linea' : ' lineas');
+
+    if (n === 0) {
+      body.innerHTML = '<div class="empty-state"><div class="es-icon">&#127819;</div><p>Aun no hay lineas registradas.<br>Agrega calibres y cajas arriba.</p></div>';
+      totales.style.display = 'none';
+      return;
+    }
+
+    var totalCajas   = 0;
+    var totalLimones = 0;
+
+    var rows = limonesLineas.map(function(l, i) {
+      totalCajas   += l.cajas;
+      totalLimones += l.limones;
+      return '<tr>' +
+        '<td><span class="row-num">' + (i+1) + '</span></td>' +
+        '<td><span class="calibre-chip">' + l.calibre + '</span></td>' +
+        '<td>' + l.cajas.toLocaleString('es-CR') + ' cajas</td>' +
+        '<td>' + l.limones.toLocaleString('es-CR') + ' limones</td>' +
+        '<td><button class="btn-del-row" onclick="eliminarLinea(' + i + ')" title="Eliminar">&#128465;</button></td>' +
+        '</tr>';
+    }).join('');
+
+    body.innerHTML =
+      '<table class="factura-table">' +
+        '<thead><tr>' +
+          '<th>#</th><th>Calibre</th><th>Cajas</th><th>Total Limones</th><th></th>' +
+        '</tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>';
+
+    // Totales
+    var granTotal = totalCajas + totalLimones;
+    document.getElementById('ft-cajas').textContent      = totalCajas.toLocaleString('es-CR');
+    document.getElementById('ft-limones').textContent    = totalLimones.toLocaleString('es-CR');
+    document.getElementById('ft-gran-total').textContent = granTotal.toLocaleString('es-CR');
+    totales.style.display = 'grid';
+  }
+
+  function guardarTodo() {
+    if (limonesLineas.length === 0) { showToast('Sin lineas', 'Agrega al menos una linea de calibre y cajas.'); return; }
+    var cont = window._contenedorActual || {};
+    cont.limones = limonesLineas;
+    var totalCajas   = limonesLineas.reduce(function(s,l){ return s+l.cajas; }, 0);
+    var totalLimones = limonesLineas.reduce(function(s,l){ return s+l.limones; }, 0);
+    cont.totalCajas   = totalCajas;
+    cont.totalLimones = totalLimones;
+
+    var lista = JSON.parse(localStorage.getItem('contenedores') || '[]');
+    lista.push(cont);
+    localStorage.setItem('contenedores', JSON.stringify(lista));
+    actualizarEstadisticas();
+
+    showToast('&#10003; Guardado', '"' + (cont.nombre||'Contenedor') + '" registrado con ' + totalCajas + ' cajas y ' + totalLimones.toLocaleString('es-CR') + ' limones.');
+    setTimeout(function() {
+      document.getElementById('page-limones').classList.remove('active');
+      ['f-nombre','f-fecha','f-fito','f-transporte','f-precio'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+      if(typeof recalcular==='function') recalcular();
+      closeIntlPage();
+      window._contenedorActual = null;
+    }, 2000);
+  }
+</script>
+
+</body>
+</html>
